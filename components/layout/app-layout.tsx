@@ -13,9 +13,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Search or other topbar items can go here */}
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium hidden md:block">{MOCK_DATA.user.name}</span>
+            <span className="text-sm font-medium hidden md:block">{MOCK_DATA.users.full_name}</span>
             <Avatar>
-              <AvatarImage src={MOCK_DATA.user.avatar_url} />
+              <AvatarImage src={MOCK_DATA.users.avatar_url} />
               <AvatarFallback>AB</AvatarFallback>
             </Avatar>
           </div>
