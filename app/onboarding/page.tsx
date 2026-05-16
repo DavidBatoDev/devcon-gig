@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import ReactMarkdown from "react-markdown"
 import {
   User, ChevronRight, Terminal, FileText, Info, ArrowRight,
-  UserCheck, GitPullRequest, Cpu, Languages, Star, CheckCircle2,
+  UserCheck, GitPullRequest, Cpu, Star, CheckCircle2,
   UploadCloud, FileSpreadsheet, Sparkles, Loader2
 } from "lucide-react"
 
@@ -17,6 +17,159 @@ import { GithubIcon } from "@/components/icons"
 import type { CareerProfile, GigMatch, ProfileGenerateResponse } from "@/lib/types"
 
 type Step = 1 | 2 | 3
+
+const MOCK_STEP1_DAVID: ProfileGenerateResponse = {
+  github_analysis_id: "mock-gh-analysis-david",
+  resume_analysis_id: "mock-rs-analysis-david",
+  narrative:
+    "## David Bato-Dev\n\nDavid demonstrates consistent full-stack momentum with strong activity in TypeScript/Next.js projects and practical API integration work. His profile signals a builder mindset: he ships working features, iterates quickly, and aligns projects with real user needs.\n\n## Proof-of-Work Highlights\n\nGitHub signals show repeat usage of modern web stacks, with emphasis on React patterns, server-side routing, and production-style integrations. Project choices indicate an engineering direction toward AI-enabled product development.\n\n## Declared vs Demonstrated\n\nResume intent and project output are aligned: declared skills in web engineering and backend integration are supported by tangible repository evidence. Growth opportunities remain in infra and deployment depth (Docker, system design, scaling patterns).\n\n## Plausible Role Fit\n\nMost plausible near-term role: AI Product Engineer (TypeScript + Python-adjacent integrations), with a progression path toward full AI Application Engineer responsibilities.",
+  analysis: {
+    github: {
+      detected_skills: [
+        { skill: "TypeScript", confidence: 0.95 },
+        { skill: "Next.js", confidence: 0.9 },
+        { skill: "React", confidence: 0.88 },
+        { skill: "Node.js", confidence: 0.82 },
+        { skill: "Python", confidence: 0.62 },
+      ],
+      engineering_strengths: [
+        "Fast iteration and shipping cadence",
+        "Strong frontend architecture habits",
+        "Good product-oriented implementation choices",
+      ],
+      project_complexity_score: 75,
+      ai_readiness_signals: [
+        "LLM-enabled feature experimentation",
+        "API integration reliability",
+        "Practical full-stack delivery",
+      ],
+    },
+    resume: {
+      declared_skills: ["TypeScript", "React", "Next.js", "Python", "SQL"],
+      education: [{ institution: "University", degree: "BS Computer Science", year: "2027" }],
+      experience: [
+        {
+          company: "Startup Team",
+          role: "Software Engineer Intern",
+          duration: "2025",
+          summary: "Built product features and improved API workflows for internal tools.",
+        },
+      ],
+      projects: [
+        { name: "DEVCON Gig", summary: "Career intelligence and matching platform for developers." },
+        { name: "AI Assistant Integration", summary: "Chat workflow and route orchestration using API-first design." },
+      ],
+    },
+  },
+}
+
+const MOCK_STEP2_DAVID: CareerProfile = {
+  readiness_score: 76,
+  role_match: "AI Product Engineer (TypeScript/Next.js + API Integrations)",
+  strengths: [
+    "Strong TypeScript + Next.js delivery",
+    "Evidence-backed full-stack project execution",
+    "Good alignment between declared and demonstrated skills",
+  ],
+  missing_skills: ["Docker", "System Design for scale", "Advanced MLOps fundamentals"],
+  recommended_career_path:
+    "Focus on production-grade deployment, architecture patterns, and AI application reliability to move toward Senior AI Application Engineer roles.",
+  narrative:
+    "David is a practical builder with a strong web engineering core and emerging AI product instincts. His GitHub and resume alignment is a positive signal for role readiness. The next growth leap is not syntax-level coding but production depth: deployment, observability, and scalable system design. If he invests in those areas while continuing to ship user-facing AI features, he can rapidly progress into higher-impact AI engineering roles.",
+}
+
+const MOCK_GIG_MATCHES_DAVID: GigMatch[] = [
+  {
+    user_id: "mock-user-david",
+    gig_id: "mock-gig-1",
+    match_percentage: 92,
+    explanation:
+      "Strong alignment with TypeScript/Next.js delivery and practical API integration experience shown in portfolio work.",
+    missing_requirements: ["Docker production deployment"],
+    gig: {
+      id: "mock-gig-1",
+      title: "AI Full Stack Engineer",
+      description: "Build and ship AI-powered web features using Next.js, APIs, and data pipelines.",
+      type: "role",
+      required_skills: ["TypeScript", "Next.js", "React", "API Integration"],
+      nice_to_have_skills: ["Docker", "System Design", "LLM Tooling"],
+      min_readiness_score: 70,
+      external_url: null,
+    },
+  },
+  {
+    user_id: "mock-user-david",
+    gig_id: "mock-gig-2",
+    match_percentage: 87,
+    explanation:
+      "Profile shows solid frontend + backend balance and a strong product execution pattern suitable for startup delivery.",
+    missing_requirements: ["Advanced MLOps"],
+    gig: {
+      id: "mock-gig-2",
+      title: "Startup Founding Engineer (AI)",
+      description: "Own end-to-end product features for an AI-first startup from prototype to production.",
+      type: "startup",
+      required_skills: ["React", "Node.js", "Product Engineering"],
+      nice_to_have_skills: ["MLOps", "Cloud Architecture"],
+      min_readiness_score: 75,
+      external_url: null,
+    },
+  },
+  {
+    user_id: "mock-user-david",
+    gig_id: "mock-gig-3",
+    match_percentage: 84,
+    explanation:
+      "Good fit for practical shipping speed and API-first implementation in a scoped freelance engagement.",
+    missing_requirements: [],
+    gig: {
+      id: "mock-gig-3",
+      title: "Freelance: Resume Parser MVP",
+      description: "Develop a resume parsing MVP with extraction, validation, and simple scoring.",
+      type: "freelance",
+      required_skills: ["TypeScript", "APIs", "Text Processing"],
+      nice_to_have_skills: ["Python", "NLP Basics"],
+      min_readiness_score: 65,
+      external_url: null,
+    },
+  },
+  {
+    user_id: "mock-user-david",
+    gig_id: "mock-gig-4",
+    match_percentage: 81,
+    explanation:
+      "Strong candidate for remote internship-style execution with clear mentorship and feature ownership.",
+    missing_requirements: ["Cloud deployment confidence"],
+    gig: {
+      id: "mock-gig-4",
+      title: "Remote AI Product Intern",
+      description: "Contribute to user-facing AI product features and internal tooling.",
+      type: "internship",
+      required_skills: ["JavaScript", "React", "Problem Solving"],
+      nice_to_have_skills: ["Cloud", "Prompt Engineering"],
+      min_readiness_score: 55,
+      external_url: null,
+    },
+  },
+  {
+    user_id: "mock-user-david",
+    gig_id: "mock-gig-5",
+    match_percentage: 79,
+    explanation:
+      "Evidence of strong practical coding makes this a solid match for contribution-driven open-source roadmap tasks.",
+    missing_requirements: ["Maintainer-level OSS workflows"],
+    gig: {
+      id: "mock-gig-5",
+      title: "Open Source AI Contributor",
+      description: "Implement scoped features and fixes in open-source AI tooling projects.",
+      type: "open_source",
+      required_skills: ["Git", "TypeScript", "Code Quality"],
+      nice_to_have_skills: ["Testing", "Docs", "Issue Triage"],
+      min_readiness_score: 60,
+      external_url: null,
+    },
+  },
+]
 
 /* ---------- Markdown helpers (preserved from original) ---------- */
 function toStep1Markdown(data: ProfileGenerateResponse): string {
@@ -33,6 +186,31 @@ function toStep2Markdown(data: CareerProfile): string {
   const strengths = data.strengths?.map((s) => `- ${s}`).join("\n") || "- None listed."
   const missing = data.missing_skills?.map((s) => `- ${s}`).join("\n") || "- None listed."
   return `## Career Profile\n\n### Readiness Score\n**${data.readiness_score}/100**\n\n### Role Match\n${data.role_match || "Not provided"}\n\n### Strengths\n${strengths}\n\n### Missing Skills\n${missing}\n\n### Recommended Career Path\n${data.recommended_career_path || "Not provided"}\n\n### Narrative\n${data.narrative || "No narrative returned."}\n`
+}
+
+function isSparseStep1(data: ProfileGenerateResponse): boolean {
+  const gh = data.analysis?.github || {}
+  const rs = data.analysis?.resume || {}
+  const hasGh =
+    (gh.detected_skills?.length || 0) > 0 ||
+    (gh.engineering_strengths?.length || 0) > 0 ||
+    (gh.ai_readiness_signals?.length || 0) > 0
+  const hasRs =
+    (rs.declared_skills?.length || 0) > 0 ||
+    (rs.experience?.length || 0) > 0 ||
+    (rs.projects?.length || 0) > 0
+  const narrative = (data.narrative || "").trim()
+  return !(hasGh && hasRs && narrative.length > 80)
+}
+
+function isSparseStep2(data: CareerProfile): boolean {
+  const narrative = (data.narrative || "").trim()
+  const hasCore =
+    typeof data.readiness_score === "number" &&
+    !!data.role_match &&
+    (data.strengths?.length || 0) > 0 &&
+    (data.missing_skills?.length || 0) > 0
+  return !(hasCore && narrative.length > 80)
 }
 
 /* ---------- Sync log type ---------- */
@@ -92,6 +270,7 @@ export default function OnboardingPage() {
   const [step1Done, setStep1Done] = useState(false)
   const [step2Done, setStep2Done] = useState(false)
   const [step3Done, setStep3Done] = useState(false)
+  const [fallbackNotice, setFallbackNotice] = useState<string | null>(null)
 
   // Terminal sync animation state
   const [visibleLogs, setVisibleLogs] = useState<SyncLog[]>([])
@@ -147,38 +326,84 @@ export default function OnboardingPage() {
     const resumeErr = validateResume(resumeFile)
     if (!username) { setError("GitHub username is required."); return }
     if (resumeErr) { setError(resumeErr); return }
-    setLoading(true); setError(null); setIsSyncing(true); setVisibleLogs([])
+    setLoading(true); setError(null); setFallbackNotice(null); setIsSyncing(true); setVisibleLogs([])
     try {
       const form = new FormData()
       form.append("github_url", `https://github.com/${username}`)
       form.append("resume", resumeFile as File)
       const response = await fetch("/api/profile/generate", { method: "POST", body: form })
       const data = (await response.json()) as ProfileGenerateResponse & { detail?: string }
-      if (!response.ok) { setError(data.detail || "Profile generation failed."); return }
+      if (!response.ok) {
+        setOnboardingProfile(MOCK_STEP1_DAVID)
+        setStep1Done(true)
+        setFallbackNotice("Live Step 1 failed. Using David mock data so you can continue.")
+        return
+      }
+      if (isSparseStep1(data)) {
+        setOnboardingProfile(MOCK_STEP1_DAVID)
+        setStep1Done(true)
+        setFallbackNotice("Live Step 1 returned sparse data. Using David mock data so you can continue.")
+        return
+      }
       setOnboardingProfile(data); setStep1Done(true)
-    } catch { setError("Unable to process Step 1.") }
+    } catch {
+      setOnboardingProfile(MOCK_STEP1_DAVID)
+      setStep1Done(true)
+      setFallbackNotice("Step 1 request failed. Using David mock data so you can continue.")
+    }
     finally { setLoading(false); setIsSyncing(false) }
   }
 
   const runStep2 = async () => {
-    setLoading(true); setError(null)
+    setLoading(true); setError(null); setFallbackNotice(null)
     try {
       const response = await fetch("/api/career/generate", { method: "POST" })
       const data = (await response.json()) as CareerProfile & { detail?: string }
-      if (!response.ok) { setError(data.detail || "Career generation failed."); return }
+      if (!response.ok) {
+        setCareerProfile(MOCK_STEP2_DAVID)
+        setStep2Done(true)
+        setFallbackNotice("Live Step 2 failed. Using David mock career profile so you can continue.")
+        return
+      }
+      if (isSparseStep2(data)) {
+        setCareerProfile(MOCK_STEP2_DAVID)
+        setStep2Done(true)
+        setFallbackNotice("Live Step 2 returned sparse data. Using David mock career profile so you can continue.")
+        return
+      }
       setCareerProfile(data); setStep2Done(true)
-    } catch { setError("Unable to process Step 2.") }
+    } catch {
+      setCareerProfile(MOCK_STEP2_DAVID)
+      setStep2Done(true)
+      setFallbackNotice("Step 2 request failed. Using David mock career profile so you can continue.")
+    }
     finally { setLoading(false) }
   }
 
   const runStep3 = async () => {
-    setLoading(true); setError(null)
+    setLoading(true); setError(null); setFallbackNotice(null)
     try {
       const response = await fetch("/api/gigs/match", { method: "POST" })
       const data = (await response.json()) as { matches?: GigMatch[]; detail?: string }
-      if (!response.ok) { setError(data.detail || "Gig matching failed."); return }
-      setGigMatches(data.matches || []); setStep3Done(true)
-    } catch { setError("Unable to process Step 3.") }
+      if (!response.ok) {
+        setGigMatches(MOCK_GIG_MATCHES_DAVID)
+        setStep3Done(true)
+        setFallbackNotice("Live Step 3 failed. Using David mock gigs so you can continue.")
+        return
+      }
+      const matches = data.matches || []
+      if (matches.length === 0) {
+        setGigMatches(MOCK_GIG_MATCHES_DAVID)
+        setStep3Done(true)
+        setFallbackNotice("No live gigs returned. Using David mock gigs so you can continue.")
+        return
+      }
+      setGigMatches(matches); setStep3Done(true)
+    } catch {
+      setGigMatches(MOCK_GIG_MATCHES_DAVID)
+      setStep3Done(true)
+      setFallbackNotice("Step 3 request failed. Using David mock gigs so you can continue.")
+    }
     finally { setLoading(false) }
   }
 
@@ -304,12 +529,13 @@ export default function OnboardingPage() {
               </div>
 
               {error && <p className="text-xs font-mono text-red-600 border border-red-200 bg-red-50 rounded-sm p-2">{error}</p>}
+              {fallbackNotice && <p className="text-xs font-mono text-amber-700 border border-amber-200 bg-amber-50 rounded-sm p-2">{fallbackNotice}</p>}
             </div>
 
             {/* Right: Terminal / Results */}
             <Card className="border-slate-200 bg-white shadow-none overflow-hidden">
               <CardContent className="p-0">
-                {loading || visibleLogs.length > 0 ? (
+                {loading || isSyncing ? (
                   <div className="bg-slate-900 text-slate-100 p-4 font-mono text-xs min-h-[320px] rounded-sm">
                     <div className="flex items-center gap-2 text-slate-500 mb-4 pb-2 border-b border-slate-700/50">
                       <Terminal className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -363,6 +589,7 @@ export default function OnboardingPage() {
                 <Button className="rounded-sm bg-slate-900 text-white hover:bg-slate-800 text-xs font-mono uppercase tracking-wider h-9 px-6" onClick={() => setStep(3)} disabled={!step2Done}>Next Step</Button>
               </div>
               {error && <p className="text-xs font-mono text-red-600 border border-red-200 bg-red-50 rounded-sm p-2">{error}</p>}
+              {fallbackNotice && <p className="text-xs font-mono text-amber-700 border border-amber-200 bg-amber-50 rounded-sm p-2">{fallbackNotice}</p>}
             </div>
             <Card className="border-slate-200 bg-white shadow-none overflow-hidden">
               <CardContent className="p-0">
@@ -400,6 +627,7 @@ export default function OnboardingPage() {
                 <Button className="rounded-sm bg-slate-900 text-white hover:bg-slate-800 text-xs font-mono uppercase tracking-wider h-9 px-6" onClick={() => router.push("/dashboard")} disabled={!step3Done || gigMatches.length === 0}>Dashboard</Button>
               </div>
               {error && <p className="text-xs font-mono text-red-600 border border-red-200 bg-red-50 rounded-sm p-2">{error}</p>}
+              {fallbackNotice && <p className="text-xs font-mono text-amber-700 border border-amber-200 bg-amber-50 rounded-sm p-2">{fallbackNotice}</p>}
             </div>
             <Card className="border-slate-200 bg-white shadow-none overflow-hidden">
               <CardContent className="p-0">
