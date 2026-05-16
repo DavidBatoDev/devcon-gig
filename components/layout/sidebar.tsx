@@ -14,13 +14,18 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const isAppLight = ["/dashboard", "/gigs", "/profile", "/copilot"].includes(pathname)
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-10 hidden w-64 flex-col border-r bg-background md:flex">
-      <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+    <aside
+      className={`fixed inset-y-0 left-0 z-10 hidden w-64 flex-col border-r md:flex ${
+        isAppLight ? "border-[#d8e2f2] bg-white" : "bg-background"
+      }`}
+    >
+      <div className={`flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 ${isAppLight ? "border-[#d8e2f2]" : ""}`}>
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Code2 className="h-6 w-6 text-primary" />
-          <span className="">DEVCON GIG</span>
+          <Code2 className={`h-6 w-6 ${isAppLight ? "text-[#1258e8]" : "text-primary"}`} />
+          <span className={isAppLight ? "text-[#1d2c44]" : ""}>DEVCON GIG</span>
         </Link>
       </div>
       <div className="flex-1 overflow-auto py-2">
@@ -34,7 +39,13 @@ export function Sidebar() {
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                  isActive ? "bg-muted text-primary" : "text-muted-foreground"
+                  isActive
+                    ? isAppLight
+                      ? "bg-[#e9f1ff] text-[#1258e8]"
+                      : "bg-muted text-primary"
+                    : isAppLight
+                      ? "text-[#5f7597] hover:bg-[#f3f7fd]"
+                      : "text-muted-foreground"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -44,10 +55,14 @@ export function Sidebar() {
           })}
         </nav>
       </div>
-      <div className="mt-auto p-4 border-t">
+      <div className={`mt-auto border-t p-4 ${isAppLight ? "border-[#d8e2f2]" : ""}`}>
         <Link
           href="/"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:text-primary"
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+            isAppLight
+              ? "text-[#5f7597] hover:bg-[#f3f7fd] hover:text-[#1258e8]"
+              : "text-muted-foreground hover:text-primary"
+          }`}
         >
           <LogOut className="h-4 w-4" />
           Disconnect

@@ -50,14 +50,14 @@ export default function CopilotPage() {
 
         {/* Left Rail: Diagnostic Prompts */}
         <div className="hidden lg:flex w-80 flex-col gap-4 overflow-y-auto pr-2">
-          <div className="bg-background/40 p-5 rounded-lg border border-border/50">
+          <div className="rounded-lg border border-[#d8e2f2] bg-white p-5 text-[#1d2c44]">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-primary/10 rounded-md">
+              <div className="rounded-md bg-[#e8f0ff] p-2">
                 <BrainCircuit className="w-5 h-5 text-primary" />
               </div>
               <h2 className="font-bold text-lg">Diagnostics</h2>
             </div>
-            <p className="text-sm text-muted-foreground mb-6">
+            <p className="mb-6 text-sm text-[#607a9f]">
               Actionable prompts based on your current capabilities and target roles.
             </p>
             <div className="space-y-3">
@@ -67,10 +67,10 @@ export default function CopilotPage() {
                   <button
                     key={i}
                     onClick={() => handleSend(prompt.text)}
-                    className="w-full text-left p-3 rounded-md border border-border/50 bg-muted/20 hover:bg-muted/50 hover:border-primary/30 transition-all text-sm flex gap-3 items-start group"
+                    className="group flex w-full items-start gap-3 rounded-md border border-[#d8e2f2] bg-[#f8fbff] p-3 text-left text-sm transition-all hover:border-primary/30 hover:bg-[#eff5ff]"
                   >
                     <Icon className={`w-4 h-4 mt-0.5 flex-shrink-0 ${prompt.accent} group-hover:scale-110 transition-transform`} />
-                    <span className="text-foreground/90">{prompt.text}</span>
+                    <span className="text-[#2f4e76]">{prompt.text}</span>
                   </button>
                 )
               })}
@@ -79,7 +79,7 @@ export default function CopilotPage() {
         </div>
 
         {/* Right Viewport: Chat Area */}
-        <Card className="flex-1 glass flex flex-col overflow-hidden border-border/50">
+        <Card className="flex flex-1 flex-col overflow-hidden border-[#d8e2f2] bg-white text-[#1d2c44]">
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
             {messages.map((msg, i) => (
@@ -101,7 +101,7 @@ export default function CopilotPage() {
                     className={`rounded-lg p-4 text-sm whitespace-pre-wrap leading-relaxed ${
                       msg.role === "user"
                         ? "bg-primary text-primary-foreground font-medium"
-                        : "bg-muted/30 border border-border/50 text-foreground/90"
+                        : "border border-[#d8e2f2] bg-[#f8fbff] text-[#2f4e76]"
                     }`}
                   >
                     {msg.content}
@@ -112,7 +112,7 @@ export default function CopilotPage() {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 bg-background/50 border-t border-border/50 backdrop-blur-md">
+          <div className="border-t border-[#d8e2f2] bg-[#f8fbff] p-4">
             <div className="relative max-w-4xl mx-auto flex items-center">
               <input
                 type="text"
@@ -120,7 +120,7 @@ export default function CopilotPage() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
                 placeholder="Ask Copilot about your career roadmap..."
-                className="w-full h-12 pl-4 pr-14 rounded-lg border border-border/50 bg-muted/30 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                className="h-12 w-full rounded-lg border border-[#d8e2f2] bg-white pl-4 pr-14 text-sm text-[#1d2c44] focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
               <Button
                 size="icon"
@@ -131,7 +131,7 @@ export default function CopilotPage() {
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-center text-xs text-muted-foreground mt-3 font-mono">
+            <p className="mt-3 text-center font-mono text-xs text-[#607a9f]">
               AI Copilot can make mistakes. Verify technical guidance.
             </p>
           </div>
