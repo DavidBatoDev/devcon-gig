@@ -1,134 +1,183 @@
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
 import { AppLayout } from "@/components/layout/app-layout"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MOCK_DATA } from "@/lib/mock-data"
-import { FileText, CheckCircle2, GitCommit, Users, Star, Box } from "lucide-react"
+import { FileText, CheckCircle2, Users, Box } from "lucide-react"
 import { GithubIcon } from "@/components/icons"
 
+type ProfilePayload = {
+  user: {
+    full_name?: string | null
+    github_username?: string | null
+    avatar_url?: string | null
+  } | null
+  github_profile: {
+    repos?: Array<{ name?: string; stargazers_count?: number; primary_language?: string }>
+    followers?: number
+    pr_count?: number
+  } | null
+  github_analysis: {
+    detected_skills?: Array<{ skill: string; confidence: number }>
+    engineering_strengths?: string[]
+  } | null
+  resume_analysis: {
+    declared_skills?: string[]
+    experience?: Array<{ company?: string; role?: string; duration?: string; summary?: string }>
+    education?: Array<{ institution?: string; degree?: string; year?: string }>
+  } | null
+  career_profile: {
+    role_match?: string
+    readiness_score?: number
+    missing_skills?: string[]
+  } | null
+}
+
 export default function ProfilePage() {
-  const { users, github_profiles } = MOCK_DATA
+  const [data, setData] = useState<ProfilePayload | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const response = await fetch("/api/profile/me")
+        const body = (await response.json()) as ProfilePayload & { detail?: string }
+        if (!response.ok) {
+          setError(body.detail || "Failed to load profile.")
+          return
+        }
+        setData(body)
+      } catch {
+        setError("Unable to load profile.")
+      }
+    }
+    void run()
+  }, [])
+
+  const initials = useMemo(() => {
+    const name = data?.user?.full_name || data?.user?.github_username || "DG"
+    return name
+      .split(" ")
+      .map((s) => s[0]?.toUpperCase() || "")
+      .join("")
+      .slice(0, 2)
+  }, [data?.user?.full_name, data?.user?.github_username])
+
+  const repos = data?.github_profile?.repos || []
+  const detected = data?.github_analysis?.detected_skills || []
+  const declared = data?.resume_analysis?.declared_skills || []
+  const missing = data?.career_profile?.missing_skills || []
+  const roleMatch = data?.career_profile?.role_match || "Not generated yet"
+  const readiness = data?.career_profile?.readiness_score
 
   return (
     <AppLayout>
       <div className="flex flex-col gap-8 pb-12">
-        {/* Header Section */}
         <div className="relative flex flex-col items-start gap-6 overflow-hidden rounded-2xl border border-[#d8e2f2] bg-white p-8 text-[#1d2c44] md:flex-row md:items-center">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20" />
           <Avatar className="h-24 w-24 border-2 border-primary/20 shadow-lg">
-            <AvatarImage src={users.avatar_url} />
-            <AvatarFallback className="text-xl">AB</AvatarFallback>
+            <AvatarImage src={data?.user?.avatar_url || undefined} />
+            <AvatarFallback className="text-xl">{initials}</AvatarFallback>
           </Avatar>
-          <div className="space-y-2 relative z-10">
-            <h1 className="text-3xl font-extrabold tracking-tight">{users.full_name}</h1>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-extrabold tracking-tight">{data?.user?.full_name || "Developer Profile"}</h1>
             <div className="flex items-center gap-3 text-[#607a9f]">
               <span className="flex items-center gap-1.5 font-mono text-sm">
-                <GithubIcon className="h-4 w-4 text-primary" /> {users.github_username}
+                <GithubIcon className="h-4 w-4 text-primary" /> {data?.user?.github_username || "No username"}
               </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary" className="bg-primary/10 text-primary">Role: {roleMatch}</Badge>
+              {typeof readiness === "number" ? (
+                <Badge variant="outline" className="border-[#1258e8] text-[#1258e8]">Readiness: {readiness}</Badge>
+              ) : null}
             </div>
           </div>
         </div>
 
+        {error ? <p className="text-sm text-[#d92d20]">{error}</p> : null}
+
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Dual-Signal: Code Proof-of-Work */}
           <Card className="relative flex flex-col overflow-hidden border border-[#d8e2f2] bg-white text-[#1d2c44]">
-            <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
+            <div className="absolute left-0 top-0 h-1 w-full bg-primary" />
             <CardHeader className="border-b border-[#e5edf8] bg-[#f8fbff] pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <GithubIcon className="h-5 w-5 text-primary" /> Code Proof-of-Work
-                </CardTitle>
-                <Badge variant="secondary" className="bg-primary/10 text-primary">70% Weight</Badge>
-              </div>
-              <CardDescription>Verified engineering activity via GitHub API.</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <GithubIcon className="h-5 w-5 text-primary" /> GitHub Profile
+              </CardTitle>
+              <CardDescription>Live data from GitHub profile and analyses.</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6 space-y-6 flex-1">
+            <CardContent className="flex-1 space-y-6 pt-6">
               <div>
                 <h4 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#607a9f]">
-                  <Box className="h-4 w-4" /> Top Repositories
+                  <Box className="h-4 w-4" /> Repositories
                 </h4>
                 <div className="space-y-3">
-                  {github_profiles.repos.map((repo, i) => (
+                  {repos.slice(0, 6).map((repo, i) => (
                     <div key={i} className="flex items-center justify-between rounded-md border border-[#d8e2f2] bg-[#f8fbff] p-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded border border-[#d8e2f2] bg-white">
-                          <GitCommit className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-mono text-sm font-bold">{repo.name}</p>
-                          <p className="text-xs text-[#607a9f]">{repo.primary_language}</p>
-                        </div>
+                      <div>
+                        <p className="font-mono text-sm font-bold">{repo.name || "Unnamed repo"}</p>
+                        <p className="text-xs text-[#607a9f]">{repo.primary_language || "Unknown language"}</p>
                       </div>
-                      <Badge variant="outline" className="gap-1 font-mono text-xs">
-                        <Star className="h-3 w-3 text-secondary" fill="currentColor" /> {repo.stars}
-                      </Badge>
+                      <Badge variant="outline" className="gap-1 font-mono text-xs">{repo.stargazers_count || 0} stars</Badge>
                     </div>
                   ))}
+                  {repos.length === 0 ? <p className="text-sm text-[#607a9f]">No repos synced yet.</p> : null}
                 </div>
               </div>
-              
+
               <div>
-                <h4 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#607a9f]">Core Metrics</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-md border border-[#d8e2f2] bg-[#f8fbff] p-3">
-                    <p className="mb-1 text-xs text-[#607a9f]">Commits/PRs</p>
-                    <p className="text-xl font-mono font-bold">{github_profiles.pr_count}</p>
-                  </div>
-                  <div className="rounded-md border border-[#d8e2f2] bg-[#f8fbff] p-3">
-                    <p className="mb-1 text-xs text-[#607a9f]">Followers</p>
-                    <p className="text-xl font-mono font-bold">{github_profiles.followers}</p>
-                  </div>
+                <h4 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#607a9f]">Detected Skills</h4>
+                <div className="flex flex-wrap gap-2">
+                  {detected.map((s, i) => (
+                    <Badge key={i} variant="outline" className="border-[#d8e2f2] bg-[#f8fbff] text-[#2f4e76]">
+                      {s.skill} ({Math.round((s.confidence || 0) * 100)}%)
+                    </Badge>
+                  ))}
+                  {detected.length === 0 ? <p className="text-sm text-[#607a9f]">No detected skills yet.</p> : null}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Dual-Signal: Declared Intent */}
           <Card className="relative flex flex-col overflow-hidden border border-[#d8e2f2] bg-white text-[#1d2c44]">
-            <div className="absolute top-0 left-0 w-full h-1 bg-secondary" />
+            <div className="absolute left-0 top-0 h-1 w-full bg-secondary" />
             <CardHeader className="border-b border-[#e5edf8] bg-[#f8fbff] pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <FileText className="h-5 w-5 text-secondary" /> Declared Intent
-                </CardTitle>
-                <Badge variant="outline" className="border-secondary text-secondary">30% Weight</Badge>
-              </div>
-              <CardDescription>Extracted from uploaded resume and manual input.</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <FileText className="h-5 w-5 text-secondary" /> Resume + Career Profile
+              </CardTitle>
+              <CardDescription>Live declared profile + career synthesis.</CardDescription>
             </CardHeader>
-            <CardContent className="pt-6 space-y-6 flex-1">
+            <CardContent className="flex-1 space-y-6 pt-6">
               <div>
-                <h4 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#607a9f]">Professional Experience</h4>
-                <ul className="space-y-4">
-                  <li className="relative ml-2 border-l border-[#d8e2f2] pb-2 pl-6">
-                    <span className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-secondary" />
-                    <p className="font-bold text-foreground">Software Engineer Intern</p>
-                    <p className="mb-1 text-sm font-mono text-[#607a9f]">Tech Startup Inc. | 2025</p>
-                    <p className="text-sm text-foreground/80">Developed frontend components and improved API latency by 15%.</p>
-                  </li>
-                  <li className="relative ml-2 border-l border-transparent pl-6">
-                    <span className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-muted-foreground" />
-                    <p className="font-bold text-foreground">Computer Science B.S.</p>
-                    <p className="mb-1 text-sm font-mono text-[#607a9f]">University of Technology | 2023 - 2027</p>
-                  </li>
-                </ul>
+                <h4 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#607a9f]">Declared Skills</h4>
+                <div className="flex flex-wrap gap-2">
+                  {declared.map((s, i) => (
+                    <Badge key={i} variant="outline" className="border-[#d8e2f2] bg-[#f8fbff] text-[#2f4e76]">{s}</Badge>
+                  ))}
+                  {declared.length === 0 ? <p className="text-sm text-[#607a9f]">No resume skills extracted yet.</p> : null}
+                </div>
               </div>
 
               <div>
-                <h4 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#607a9f]">Verified vs Declared Skills</h4>
+                <h4 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#607a9f]">Missing Skills</h4>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between rounded-md border border-[#d8e2f2] bg-[#f8fbff] p-2 text-sm">
-                    <span className="flex items-center gap-2">TypeScript <CheckCircle2 className="h-3 w-3 text-secondary" /></span>
-                    <span className="text-xs font-mono text-[#607a9f]">Verified in Code</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-md border border-[#d8e2f2] bg-[#f8fbff] p-2 text-sm">
-                    <span className="flex items-center gap-2">React <CheckCircle2 className="h-3 w-3 text-secondary" /></span>
-                    <span className="text-xs font-mono text-[#607a9f]">Verified in Code</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-md border border-dashed border-[#d8e2f2] bg-[#f8fbff] p-2 text-sm">
-                    <span className="text-[#607a9f]">Docker</span>
-                    <span className="text-xs font-mono text-[#607a9f]">Declared Only</span>
-                  </div>
+                  {missing.map((m, i) => (
+                    <div key={i} className="flex items-center justify-between rounded-md border border-[#d8e2f2] bg-[#f8fbff] p-2 text-sm">
+                      <span className="flex items-center gap-2">{m}</span>
+                      <CheckCircle2 className="h-3 w-3 text-secondary" />
+                    </div>
+                  ))}
+                  {missing.length === 0 ? <p className="text-sm text-[#607a9f]">No missing skills identified yet.</p> : null}
                 </div>
+              </div>
+
+              <div className="rounded-md border border-[#d8e2f2] bg-[#f8fbff] p-3">
+                <p className="text-xs text-[#607a9f] mb-1">GitHub Followers</p>
+                <p className="text-xl font-mono font-bold flex items-center gap-2">
+                  <Users className="h-4 w-4 text-primary" />
+                  {data?.github_profile?.followers || 0}
+                </p>
               </div>
             </CardContent>
           </Card>

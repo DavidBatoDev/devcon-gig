@@ -3,10 +3,11 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Briefcase, User, MessageSquare, LogOut, Code2 } from "lucide-react"
+import { LayoutDashboard, Briefcase, User, MessageSquare, LogOut, Code2, Store } from "lucide-react"
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Marketplace", href: "/marketplace", icon: Store },
   { name: "Gig Matching", href: "/gigs", icon: Briefcase },
   { name: "Profile", href: "/profile", icon: User },
   { name: "AI Copilot", href: "/copilot", icon: MessageSquare },
@@ -14,7 +15,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const isAppLight = ["/dashboard", "/gigs", "/profile", "/copilot"].includes(pathname)
+  const isAppLight = ["/dashboard", "/marketplace", "/gigs", "/profile", "/copilot"].includes(pathname)
 
   return (
     <aside

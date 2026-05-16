@@ -118,7 +118,10 @@ export default function OnboardingPage() {
     let idx = 0
     const interval = setInterval(() => {
       if (idx < SYNC_LOGS.length) {
-        setVisibleLogs(prev => [...prev, SYNC_LOGS[idx]])
+        const nextLog = SYNC_LOGS[idx]
+        if (nextLog) {
+          setVisibleLogs(prev => [...prev, nextLog])
+        }
         idx++
       } else {
         clearInterval(interval)
@@ -313,7 +316,9 @@ export default function OnboardingPage() {
                       <span>root@devcon-indexer:~# ./sync_profile --target {githubUsername || "..."}</span>
                     </div>
                     <div className="space-y-2.5">
-                      {visibleLogs.map((log) => {
+                      {visibleLogs
+                        .filter((log): log is SyncLog => Boolean(log && log.icon))
+                        .map((log) => {
                         const Icon = log.icon
                         const statusColor = log.status === "success" ? "text-emerald-400" : "text-sky-400"
                         const tag = log.status === "success" ? "[SUCCESS]" : "[INDEXING]"

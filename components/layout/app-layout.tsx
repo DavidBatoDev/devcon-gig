@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation"
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { profile } = useSessionState()
-  const isAppLight = ["/dashboard", "/gigs", "/profile", "/copilot"].includes(pathname)
+  const isAppLight = ["/dashboard", "/marketplace", "/gigs", "/profile", "/copilot"].includes(pathname)
   const initials = (profile?.full_name || profile?.github_username || "DG")
     .split(" ")
     .map((part) => part[0]?.toUpperCase() || "")
